@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/kotlin/learning_kotlin/quizapp/app/src/main/res/drawable/default_option_border_bg.xml" value="0.2265" />
+        <entry key="..\:/kotlin/learning_kotlin/quizapp/app/src/main/res/drawable/selected_option_border.xml" value="0.2265" />
+        <entry key="..\:/kotlin/learning_kotlin/quizapp/app/src/main/res/layout/activity_quiz_questions.xml" value="0.2617753623188406" />
         <entry key="app/src/main/res/drawable/default_option_border_bg.xml" value="0.2955" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_quiz_questions.xml" value="0.25" />

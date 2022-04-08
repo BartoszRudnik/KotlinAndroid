@@ -2,6 +2,10 @@ package com.example.quizapp
 
 object Constants {
 
+    const val USER_NAME : String = "user_name"
+    const val TOTAL_QUESTIONS: String = "total_questions"
+    const val CORRECT_ANSWERS: String = "correct_answers"
+
     fun getQuestions() : ArrayList<Question>{
         val questionsList = ArrayList<Question>()
 
@@ -13,7 +17,7 @@ object Constants {
             "Australia",
             "Austria",
             "Oman",
-            0
+            1
         )
         val que2 = Question(
             1,
@@ -23,7 +27,7 @@ object Constants {
             "Peru",
             "Columbia",
             "Brazil",
-            3
+            4
         )
         val que3 = Question(
             2,
@@ -33,7 +37,7 @@ object Constants {
             "Australia",
             "Austria",
             "France",
-            1
+            2
         )
         val que4 = Question(
             3,
@@ -43,7 +47,7 @@ object Constants {
             "Honduras",
             "Japan",
             "Fiji",
-            3
+            4
         )
         val que5 = Question(
             4,
@@ -53,7 +57,7 @@ object Constants {
             "Germany",
             "Poland",
             "Russia",
-            1
+            2
         )
 
         questionsList.add(que1)

@@ -1,11 +1,16 @@
 package com.example.myapplication.adapters
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.activities.AddHappyPlaceActivity
+import com.example.myapplication.activities.MainActivity
+import com.example.myapplication.database.DatabaseHandler
 import com.example.myapplication.databinding.ItemHappyPlaceBinding
 import com.example.myapplication.models.HappyPlaceModel
 
@@ -16,7 +21,7 @@ open class HappyPlacesAdapter(
 
     private var onClickListeneer: OnClickListener? = null
 
-    fun setOnClickListener(onClickListener: OnClickListener){
+    fun setOnClickListener(onClickListener: OnClickListener) {
         this.onClickListeneer = onClickListeneer
     }
 
@@ -34,11 +39,30 @@ open class HappyPlacesAdapter(
             holder.tvTitle.text = model.title
             holder.tvDescription.text = model.description
 
-            holder.itemView.setOnClickListener{
-                if(onClickListeneer != null){
+            holder.itemView.setOnClickListener {
+                if (onClickListeneer != null) {
                     onClickListeneer!!.onClick(position, model)
                 }
             }
+        }
+    }
+
+    fun notifyEditItem(activity: Activity, position: Int, requestCode: Int) {
+        val intent = Intent(context, AddHappyPlaceActivity::class.java)
+
+        intent.putExtra(MainActivity.EXTRA_PLACE_DETAILS, list[position])
+
+        activity.startActivityForResult(intent, requestCode)
+        notifyItemChanged(position)
+    }
+
+    fun removeAt(position: Int) {
+        val dbHandler = DatabaseHandler(context)
+        val isDeleted = dbHandler.deleteHappyPlace(list[position])
+
+        if (isDeleted > 0) {
+            list.removeAt(position)
+            notifyItemRemoved(position)
         }
     }
 
@@ -46,7 +70,7 @@ open class HappyPlacesAdapter(
         return list.size
     }
 
-    interface OnClickListener{
+    interface OnClickListener {
         fun onClick(position: Int, model: HappyPlaceModel)
     }
 

@@ -1,5 +1,6 @@
 package com.example.myapplication.activities
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -23,10 +24,20 @@ class MainActivity : AppCompatActivity() {
         binding?.fabAddHappyPlace?.setOnClickListener {
             val intent = Intent(this, AddHappyPlaceActivity::class.java)
 
-            startActivity(intent)
+            startActivityForResult(intent, ADD_PLACE_ACTIVITY_REQUEST_CODE)
         }
 
         getHappyPlacesListFromLocalDB()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == ADD_PLACE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                getHappyPlacesListFromLocalDB()
+            }
+        }
     }
 
     private fun getHappyPlacesListFromLocalDB() {
@@ -38,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             binding?.tvNoRecordsAvailable?.visibility = View.GONE
 
             setupHappyPlacesRecyclerView(getHappyPlaceList)
-        }else{
+        } else {
             binding?.tvNoRecordsAvailable?.visibility = View.VISIBLE
             binding?.rvHappyPlacesList?.visibility = View.GONE
         }
@@ -51,5 +62,21 @@ class MainActivity : AppCompatActivity() {
         val placesAdapter = HappyPlacesAdapter(this, happyPlaceList)
 
         binding?.rvHappyPlacesList?.adapter = placesAdapter
+
+        placesAdapter.setOnClickListener(object : HappyPlacesAdapter.OnClickListener {
+            override fun onClick(position: Int, model: HappyPlaceModel) {
+                val intent = Intent(this@MainActivity, HappyPlaceDetailActivity::class.java)
+
+                intent.putExtra(EXTRA_PLACE_DETAILS, model)
+
+                startActivity(intent)
+            }
+        })
     }
+
+    companion object {
+        var ADD_PLACE_ACTIVITY_REQUEST_CODE = 1
+        var EXTRA_PLACE_DETAILS = "extra_place_details"
+    }
+
 }

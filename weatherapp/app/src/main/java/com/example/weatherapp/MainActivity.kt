@@ -2,29 +2,36 @@ package com.example.weatherapp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import com.example.weatherapp.models.WeatherResponse
+import com.example.weatherapp.network.WeatherService
 import com.google.android.gms.location.*
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import android.location.LocationRequest as LocationRequest1
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private var mProgressDialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +65,69 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun getLocationWeatherDetails(latitude: Double, longitude: Double) {
+        if (Constants.isNetworkAvailable(this)) {
+
+            val retrofit: Retrofit = Retrofit.Builder().baseUrl(Constants.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create()).build()
+
+            val service: WeatherService = retrofit.create(WeatherService::class.java)
+
+            val listCall: Call<WeatherResponse> =
+                service.getWeather(latitude, longitude, Constants.METRIC_UNIT, Constants.APP_ID)
+
+
+            showCustomDialog()
+
+            listCall.enqueue(object : Callback<WeatherResponse> {
+                override fun onResponse(
+                    call: Call<WeatherResponse>,
+                    response: Response<WeatherResponse>
+                ) {
+                    hideCustomDialog()
+                    if (response.isSuccessful) {
+                        val weatherList: WeatherResponse = response.body()!!
+                    } else {
+                        when (response.code()) {
+                            400 -> {
+                                print("Bad conneciton")
+                            }
+                            401 -> {
+                                print("Wrong auth")
+                            }
+                            404 -> {
+                                print("Data Not Found")
+                            }
+                            else -> {
+                                print("Something went wrong")
+                            }
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
+
+                }
+            })
+        } else {
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun hideCustomDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog!!.dismiss()
+        }
+    }
+
+    private fun showCustomDialog() {
+        mProgressDialog = Dialog(this)
+
+        mProgressDialog!!.setContentView(R.layout.dialog_custom_progress)
+
+        mProgressDialog!!.show()
+    }
+
     @SuppressLint("MissingPermission")
     private fun requestLocationData() {
         val mLocationRequest = LocationRequest()
@@ -75,10 +145,9 @@ class MainActivity : AppCompatActivity() {
         override fun onLocationResult(locationResult: LocationResult) {
             val mLastLocation: Location = locationResult.lastLocation
             val latitude = mLastLocation.latitude
-            Log.i("Current Latitude", "$latitude")
-
             val longitude = mLastLocation.longitude
-            Log.i("Current Longitude", "$longitude")
+
+            getLocationWeatherDetails(latitude, longitude)
         }
     }
 

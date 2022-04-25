@@ -9,6 +9,8 @@ object Constants {
     const val APP_ID: String = ""
     const val BASE_URL: String = ""
     const val METRIC_UNIT: String = "metric"
+    const val PREFERENCE_NAME = "WeatherAppPreference"
+    const val WEATHER_RESPONSE_DATA = "weather_response_data"
 
     fun isNetworkAvailable(context: Context): Boolean {
         val connectivityManager =

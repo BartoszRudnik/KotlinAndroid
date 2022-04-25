@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
@@ -23,6 +24,7 @@ import com.example.weatherapp.databinding.ActivityMainBinding
 import com.example.weatherapp.models.WeatherResponse
 import com.example.weatherapp.network.WeatherService
 import com.google.android.gms.location.*
+import com.google.gson.Gson
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -38,6 +40,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private lateinit var mSharedPreferences: SharedPreferences
     private var mProgressDialog: Dialog? = null
     private var binding: ActivityMainBinding? = null
 
@@ -49,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding?.root)
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        mSharedPreferences = getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE)
 
         if (!isLocationEnabled()) {
             Toast.makeText(this, "Your location provider is turned off", Toast.LENGTH_LONG).show()
@@ -78,6 +82,7 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun setupUI(weatherList: WeatherResponse) {
+
         for (i in weatherList.weather.indices) {
             binding?.tvMain?.text = weatherList.weather[i].main
             binding?.tvMainDescription?.text = weatherList.weather[i].description
@@ -170,8 +175,14 @@ class MainActivity : AppCompatActivity() {
                     hideCustomDialog()
                     if (response.isSuccessful) {
                         val weatherList: WeatherResponse = response.body()!!
+                        val weatherListJson = Gson().toJson(weatherList)
 
-                        setupUI(weatherList)
+                        val editor = mSharedPreferences.edit()
+
+                        editor.putString(Constants.WEATHER_RESPONSE_DATA, weatherListJson)
+                        editor.apply()
+
+                         setupUI(weatherList)
                     } else {
                         when (response.code()) {
                             400 -> {

@@ -13,6 +13,8 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -90,10 +92,43 @@ class MainActivity : AppCompatActivity() {
             binding?.tvSpeed?.text = weatherList.wind.speed.toString()
             binding?.tvName?.text = weatherList.name
             binding?.tvCountry?.text = weatherList.sys.country
+
+            when (weatherList.weather[i].icon) {
+                "01d" -> binding?.ivMain?.setImageResource(R.drawable.sunny)
+                "02d" -> binding?.ivMain?.setImageResource(R.drawable.cloud)
+                "03d" -> binding?.ivMain?.setImageResource(R.drawable.cloud)
+                "04d" -> binding?.ivMain?.setImageResource(R.drawable.cloud)
+                "04n" -> binding?.ivMain?.setImageResource(R.drawable.cloud)
+                "10d" -> binding?.ivMain?.setImageResource(R.drawable.rain)
+                "11d" -> binding?.ivMain?.setImageResource(R.drawable.storm)
+                "13d" -> binding?.ivMain?.setImageResource(R.drawable.snowflake)
+                "01n" -> binding?.ivMain?.setImageResource(R.drawable.cloud)
+                "02n" -> binding?.ivMain?.setImageResource(R.drawable.cloud)
+                "03n" -> binding?.ivMain?.setImageResource(R.drawable.cloud)
+                "10n" -> binding?.ivMain?.setImageResource(R.drawable.cloud)
+                "11n" -> binding?.ivMain?.setImageResource(R.drawable.rain)
+                "13n" -> binding?.ivMain?.setImageResource(R.drawable.snowflake)
+            }
         }
     }
 
-    private fun getUnit(unit: String): String? {
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_refresh -> {
+                requestLocationData()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun getUnit(unit: String): String {
         var value = "C"
 
         if ("US" == unit || "LR" == unit || "MM" == unit) {
@@ -127,6 +162,7 @@ class MainActivity : AppCompatActivity() {
             showCustomDialog()
 
             listCall.enqueue(object : Callback<WeatherResponse> {
+                @RequiresApi(Build.VERSION_CODES.N)
                 override fun onResponse(
                     call: Call<WeatherResponse>,
                     response: Response<WeatherResponse>

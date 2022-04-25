@@ -9,12 +9,15 @@ import android.content.Intent
 import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.example.weatherapp.databinding.ActivityMainBinding
 import com.example.weatherapp.models.WeatherResponse
 import com.example.weatherapp.network.WeatherService
 import com.google.android.gms.location.*
@@ -28,14 +31,20 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mFusedLocationClient: FusedLocationProviderClient
     private var mProgressDialog: Dialog? = null
+    private var binding: ActivityMainBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        setContentView(binding?.root)
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -65,6 +74,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
+    private fun setupUI(weatherList: WeatherResponse) {
+        for (i in weatherList.weather.indices) {
+            binding?.tvMain?.text = weatherList.weather[i].main
+            binding?.tvMainDescription?.text = weatherList.weather[i].description
+            binding?.tvTemp?.text =
+                weatherList.main.temp.toString() + getUnit(application.resources.configuration.locales.toString())
+            binding?.tvSunriseTime?.text = unixTime(weatherList.sys.sunrise)
+            binding?.tvSunsetTime?.text = unixTime(weatherList.sys.sunset)
+
+            binding?.tvHumidity?.text = weatherList.main.humidity.toString()
+            binding?.tvMin?.text = weatherList.main.temp_min.toString()
+            binding?.tvMax?.text = weatherList.main.temp_max.toString()
+            binding?.tvSpeed?.text = weatherList.wind.speed.toString()
+            binding?.tvName?.text = weatherList.name
+            binding?.tvCountry?.text = weatherList.sys.country
+        }
+    }
+
+    private fun getUnit(unit: String): String? {
+        var value = "C"
+
+        if ("US" == unit || "LR" == unit || "MM" == unit) {
+            value = "F"
+        }
+
+        return value
+    }
+
+    private fun unixTime(timex: Long): String? {
+        val date = Date(timex * 1000L)
+        val sdf = SimpleDateFormat("HH:mm", Locale.UK)
+
+        sdf.timeZone = TimeZone.getDefault()
+
+        return sdf.format(date)
+    }
+
     private fun getLocationWeatherDetails(latitude: Double, longitude: Double) {
         if (Constants.isNetworkAvailable(this)) {
 
@@ -87,6 +134,8 @@ class MainActivity : AppCompatActivity() {
                     hideCustomDialog()
                     if (response.isSuccessful) {
                         val weatherList: WeatherResponse = response.body()!!
+
+                        setupUI(weatherList)
                     } else {
                         when (response.code()) {
                             400 -> {

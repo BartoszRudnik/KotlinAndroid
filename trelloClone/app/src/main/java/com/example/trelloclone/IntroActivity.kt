@@ -1,5 +1,6 @@
 package com.example.trelloclone
 
+import android.content.Intent
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +22,11 @@ class IntroActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
 
-        val typeFace: Typeface = Typeface.createFromAsset(assets, "carbon bl.ttf")
+        binding?.btnSignUpIntro?.setOnClickListener {
+            startActivity(Intent(this, SignUpActivity::class.java))
+        }
+        binding?.btnSignInIntro?.setOnClickListener {
+            startActivity(Intent(this, SignInActivity::class.java))
+        }
     }
 }

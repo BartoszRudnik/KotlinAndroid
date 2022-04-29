@@ -8,6 +8,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import com.example.trelloclone.R
 import com.example.trelloclone.databinding.ActivitySignInBinding
+import com.example.trelloclone.models.User
 import com.google.firebase.auth.FirebaseAuth
 
 class SignInActivity : BaseActivity() {
@@ -83,5 +84,11 @@ class SignInActivity : BaseActivity() {
         binding?.toolbarSignInActivity?.setNavigationOnClickListener {
             onBackPressed()
         }
+    }
+
+    fun signInSuccess(loggedInUser: User?) {
+        hideProgressDialog()
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }

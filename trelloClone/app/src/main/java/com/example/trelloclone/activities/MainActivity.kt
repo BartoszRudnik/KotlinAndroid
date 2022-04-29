@@ -1,7 +1,8 @@
-package com.example.trelloclone
+package com.example.trelloclone.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.trelloclone.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

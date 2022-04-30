@@ -1,5 +1,7 @@
 package com.example.trelloclone.firebase
 
+import android.app.Activity
+import com.example.trelloclone.activities.MainActivity
 import com.example.trelloclone.activities.SignInActivity
 import com.example.trelloclone.activities.SignUpActivity
 import com.example.trelloclone.models.User
@@ -18,12 +20,28 @@ class FireStoreClass {
             }
     }
 
-    fun signInUser(activity: SignInActivity) {
+    fun signInUser(activity: Activity) {
         mFirestore.collection(Constants.USERS).document(getCurrentUserId())
             .get().addOnSuccessListener { document ->
                 val loggedInUser = document.toObject(User::class.java)
 
-                activity.signInSuccess(loggedInUser)
+                when (activity) {
+                    is SignInActivity -> {
+                        activity.signInSuccess(loggedInUser)
+                    }
+                    is MainActivity -> {
+                        activity.updateNavigationUserDetails(loggedInUser)
+                    }
+                }
+            }.addOnFailureListener {
+                when (activity) {
+                    is SignInActivity -> {
+                        activity.hideProgressDialog()
+                    }
+                    is MainActivity -> {
+                        activity.hideProgressDialog()
+                    }
+                }
             }
     }
 

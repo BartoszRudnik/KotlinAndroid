@@ -2,6 +2,7 @@ package com.example.trelloclone.firebase
 
 import android.app.Activity
 import com.example.trelloclone.activities.MainActivity
+import com.example.trelloclone.activities.MyProfileActivity
 import com.example.trelloclone.activities.SignInActivity
 import com.example.trelloclone.activities.SignUpActivity
 import com.example.trelloclone.models.User
@@ -31,6 +32,9 @@ class FireStoreClass {
                     }
                     is MainActivity -> {
                         activity.updateNavigationUserDetails(loggedInUser)
+                    }
+                    is MyProfileActivity -> {
+                        activity.setupUI(loggedInUser!!)
                     }
                 }
             }.addOnFailureListener {

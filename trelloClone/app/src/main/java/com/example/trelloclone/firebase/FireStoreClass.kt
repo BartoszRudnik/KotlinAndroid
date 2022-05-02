@@ -21,6 +21,15 @@ class FireStoreClass {
             }
     }
 
+    fun updateUserProfileData(activity: MyProfileActivity, userHashMap: HashMap<String, Any>) {
+        mFirestore.collection(Constants.USERS).document(getCurrentUserId()).update(userHashMap)
+            .addOnSuccessListener {
+                activity.profileUpdateSuccess()
+            }.addOnFailureListener {
+                activity.hideProgressDialog()
+            }
+    }
+
     fun signInUser(activity: Activity) {
         mFirestore.collection(Constants.USERS).document(getCurrentUserId())
             .get().addOnSuccessListener { document ->

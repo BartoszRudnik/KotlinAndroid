@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
@@ -16,6 +15,7 @@ import com.example.trelloclone.R
 import com.example.trelloclone.databinding.ActivityMyProfileBinding
 import com.example.trelloclone.firebase.FireStoreClass
 import com.example.trelloclone.models.User
+import com.example.trelloclone.utils.Constants
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
@@ -25,6 +25,7 @@ class MyProfileActivity : BaseActivity() {
         private const val PICK_IMAGE_REQUEST_CODE = 2
     }
 
+    private lateinit var mUserDetails: User
     private var mSelectedUserImage: Uri? = null
     private var mProfileImageDownload: String = ""
     private var binding: ActivityMyProfileBinding? = null
@@ -59,6 +60,7 @@ class MyProfileActivity : BaseActivity() {
             if (mSelectedUserImage != null) {
                 uploadUserImage()
             }
+            updateUserProfileData()
         }
     }
 
@@ -79,7 +81,7 @@ class MyProfileActivity : BaseActivity() {
     }
 
     private fun showImageChooser() {
-        var galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
 
         startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST_CODE)
     }
@@ -111,7 +113,25 @@ class MyProfileActivity : BaseActivity() {
         }
     }
 
+    private fun updateUserProfileData() {
+        val userHashMap = HashMap<String, Any>()
+
+        if (mProfileImageDownload.isNotEmpty() && mProfileImageDownload != mUserDetails.image) {
+            userHashMap[Constants.IMAGE] = mProfileImageDownload
+        }
+        if (binding?.etMobile.toString() != mUserDetails.mobile) {
+            userHashMap[Constants.MOBILE] = binding?.etMobile.toString()
+        }
+        if (binding?.etName.toString() != mUserDetails.name) {
+            userHashMap[Constants.NAME] = binding?.etName.toString()
+        }
+
+        FireStoreClass().updateUserProfileData(this, userHashMap)
+    }
+
     fun setupUI(user: User) {
+        mUserDetails = user
+
         binding?.ivUserImage?.let {
             Glide.with(this@MyProfileActivity).load(user.image).centerCrop()
                 .placeholder(R.drawable.ic_user_place_holder).into(it)
@@ -138,6 +158,8 @@ class MyProfileActivity : BaseActivity() {
 
                     mProfileImageDownload = uri.toString()
                     hideProgressDialog()
+
+                    updateUserProfileData()
                 }
             }
         }
@@ -145,5 +167,10 @@ class MyProfileActivity : BaseActivity() {
 
     private fun getFileExtension(uri: Uri?): String? {
         return MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri!!))
+    }
+
+    fun profileUpdateSuccess() {
+        hideProgressDialog()
+        finish()
     }
 }

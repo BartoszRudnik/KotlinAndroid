@@ -34,6 +34,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         nav_view.setNavigationItemSelectedListener(this)
 
         FireStoreClass().loadUserData(this)
+
+        fab_create_board.setOnClickListener {
+            startActivity(Intent(this, CreateBoardActivity::class.java))
+        }
     }
 
     private fun setupActionBar() {
@@ -42,6 +46,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         toolbar_main_activity.setNavigationOnClickListener {
             toggleDrawer()
         }
+        toolbar_main_activity.title = "Create board"
     }
 
     private fun toggleDrawer() {

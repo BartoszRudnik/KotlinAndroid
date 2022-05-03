@@ -6,6 +6,7 @@
         <entry key="app/src/main/res/drawable/nav_header_main_background.xml" value="0.122" />
         <entry key="app/src/main/res/drawable/shape_button_rounded.xml" value="0.171" />
         <entry key="app/src/main/res/drawable/white_border_shape_button_rounded.xml" value="0.171" />
+        <entry key="app/src/main/res/layout/activity_create_board.xml" value="0.15070921985815602" />
         <entry key="app/src/main/res/layout/activity_intro.xml" value="0.32563405797101447" />
         <entry key="app/src/main/res/layout/activity_my_profile.xml" value="0.15070921985815602" />
         <entry key="app/src/main/res/layout/activity_sign_in.xml" value="0.353713768115942" />

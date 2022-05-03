@@ -10,6 +10,7 @@ import com.example.trelloclone.R
 import com.example.trelloclone.databinding.ActivityMainBinding
 import com.example.trelloclone.firebase.FireStoreClass
 import com.example.trelloclone.models.User
+import com.example.trelloclone.utils.Constants
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,6 +23,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     private var binding: ActivityMainBinding? = null
+    private lateinit var mUsername: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +38,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         FireStoreClass().loadUserData(this)
 
         fab_create_board.setOnClickListener {
-            startActivity(Intent(this, CreateBoardActivity::class.java))
+            val intent = Intent(this, CreateBoardActivity::class.java)
+            intent.putExtra(Constants.NAME, mUsername)
+
+            startActivity(intent)
         }
     }
 
@@ -97,7 +102,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     fun updateNavigationUserDetails(user: User?) {
-        Glide.with(this).load(user!!.image).centerCrop()
+        mUsername = user!!.name.toString()
+
+        Glide.with(this).load(user.image).centerCrop()
             .placeholder(R.drawable.ic_user_place_holder)
             .into(nav_user_image)
 

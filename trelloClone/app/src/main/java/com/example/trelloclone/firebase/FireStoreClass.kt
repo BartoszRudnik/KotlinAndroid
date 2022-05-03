@@ -1,10 +1,8 @@
 package com.example.trelloclone.firebase
 
 import android.app.Activity
-import com.example.trelloclone.activities.MainActivity
-import com.example.trelloclone.activities.MyProfileActivity
-import com.example.trelloclone.activities.SignInActivity
-import com.example.trelloclone.activities.SignUpActivity
+import com.example.trelloclone.activities.*
+import com.example.trelloclone.models.Board
 import com.example.trelloclone.models.User
 import com.example.trelloclone.utils.Constants
 import com.google.firebase.auth.FirebaseAuth
@@ -67,5 +65,14 @@ class FireStoreClass {
         }
 
         return currentUserId
+    }
+
+    fun createBoard(activity: CreateBoardActivity, board: Board) {
+        mFirestore.collection(Constants.BOARDS).document().set(board, SetOptions.merge())
+            .addOnSuccessListener {
+                activity.boardCreatedSuccessfully()
+            }.addOnFailureListener {
+                activity.hideProgressDialog()
+            }
     }
 }

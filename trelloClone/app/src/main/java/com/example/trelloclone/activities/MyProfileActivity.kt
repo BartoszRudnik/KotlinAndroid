@@ -38,7 +38,7 @@ class MyProfileActivity : BaseActivity() {
         setContentView(binding?.root)
         setupActionBar()
 
-        FireStoreClass().signInUser(this)
+        FireStoreClass().loadUserData(this)
 
         binding?.ivUserImage?.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
@@ -171,6 +171,7 @@ class MyProfileActivity : BaseActivity() {
 
     fun profileUpdateSuccess() {
         hideProgressDialog()
+        setResult(Activity.RESULT_OK)
         finish()
     }
 }

@@ -30,7 +30,7 @@ class FireStoreClass {
             }
     }
 
-    fun signInUser(activity: Activity) {
+    fun loadUserData(activity: Activity) {
         mFirestore.collection(Constants.USERS).document(getCurrentUserId())
             .get().addOnSuccessListener { document ->
                 val loggedInUser = document.toObject(User::class.java)

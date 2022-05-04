@@ -25,7 +25,7 @@
             android:visibility="gone" />
 
         <TextView
-            android:id="@+id/no_boards_available"
+            android:id="@+id/tv_no_boards_available"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"

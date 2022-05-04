@@ -4,22 +4,28 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.trelloclone.R
+import com.example.trelloclone.adapters.BoardItemsAdapter
 import com.example.trelloclone.databinding.ActivityMainBinding
 import com.example.trelloclone.firebase.FireStoreClass
+import com.example.trelloclone.models.Board
 import com.example.trelloclone.models.User
 import com.example.trelloclone.utils.Constants
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.main_content.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     companion object {
         const val MY_PROFILE_REQUEST_CODE: Int = 11
+        const val CRATE_BOARD_REQUEST_CODE: Int = 12
     }
 
     private var binding: ActivityMainBinding? = null
@@ -35,13 +41,38 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setupActionBar()
         nav_view.setNavigationItemSelectedListener(this)
 
-        FireStoreClass().loadUserData(this)
+        FireStoreClass().loadUserData(this, true)
 
         fab_create_board.setOnClickListener {
             val intent = Intent(this, CreateBoardActivity::class.java)
             intent.putExtra(Constants.NAME, mUsername)
 
-            startActivity(intent)
+            startActivityForResult(intent, CRATE_BOARD_REQUEST_CODE)
+        }
+    }
+
+    fun populateBoardListToUI(boardsList: ArrayList<Board>) {
+        hideProgressDialog()
+
+        if (boardsList.size > 0) {
+            rv_boards_list.visibility = View.VISIBLE
+            tv_no_boards_available.visibility = View.GONE
+
+            rv_boards_list.layoutManager = LinearLayoutManager(this)
+            rv_boards_list.setHasFixedSize(true)
+
+            val adapter = BoardItemsAdapter(this, boardsList)
+
+            rv_boards_list.adapter = adapter
+
+            adapter.setOnClickListener(object : BoardItemsAdapter.OnClickListener {
+                override fun onClick(position: Int, model: Board) {
+                    startActivity(Intent(this@MainActivity, TaskListActivity::class.java))
+                }
+            })
+        } else {
+            rv_boards_list.visibility = View.GONE
+            tv_no_boards_available.visibility = View.VISIBLE
         }
     }
 
@@ -98,10 +129,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         if (resultCode == Activity.RESULT_OK && requestCode == MY_PROFILE_REQUEST_CODE) {
             FireStoreClass().loadUserData(this)
+        } else if (resultCode == Activity.RESULT_OK && requestCode == CRATE_BOARD_REQUEST_CODE) {
+            FireStoreClass().getBoardsList(this)
         }
     }
 
-    fun updateNavigationUserDetails(user: User?) {
+    fun updateNavigationUserDetails(user: User?, readBoardsList: Boolean) {
         mUsername = user!!.name.toString()
 
         Glide.with(this).load(user.image).centerCrop()
@@ -109,5 +142,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             .into(nav_user_image)
 
         tv_username.text = user.name
+
+        if (readBoardsList) {
+            showProgressDialog(resources.getString(R.string.please_wait))
+
+            FireStoreClass().getBoardsList(this)
+        }
     }
 }

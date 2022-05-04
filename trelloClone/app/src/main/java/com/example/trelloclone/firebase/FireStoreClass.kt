@@ -95,4 +95,12 @@ class FireStoreClass {
                 activity.hideProgressDialog()
             }
     }
+
+    fun getBoardDetails(taskListActivity: TaskListActivity, boardDocumentId: String) {
+        mFirestore.collection(Constants.BOARDS).document(boardDocumentId)
+            .get()
+            .addOnSuccessListener { document ->
+                taskListActivity.boardDetails(document.toObject(Board::class.java)!!)
+            }
+    }
 }

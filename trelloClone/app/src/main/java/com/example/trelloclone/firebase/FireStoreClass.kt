@@ -56,6 +56,19 @@ class FireStoreClass {
             }
     }
 
+    fun addUpdateTaskList(activity: TaskListActivity, board: Board) {
+        val taskListHashMap = HashMap<String, Any>()
+
+        taskListHashMap[Constants.TASK_LIST] = board.taskList
+
+        mFirestore.collection(Constants.BOARDS).document(board.documentId).update(taskListHashMap)
+            .addOnSuccessListener {
+                activity.addUpdateTaskListSuccess()
+            }.addOnFailureListener {
+                activity.hideProgressDialog()
+            }
+    }
+
     fun getBoardsList(activity: MainActivity) {
         mFirestore.collection(Constants.BOARDS)
             .whereArrayContains(Constants.ASSIGNED_TO, getCurrentUserId()).get()
@@ -100,7 +113,10 @@ class FireStoreClass {
         mFirestore.collection(Constants.BOARDS).document(boardDocumentId)
             .get()
             .addOnSuccessListener { document ->
-                taskListActivity.boardDetails(document.toObject(Board::class.java)!!)
+                val board = document.toObject(Board::class.java)!!
+                board.documentId = document.id
+
+                taskListActivity.boardDetails(board)
             }
     }
 }

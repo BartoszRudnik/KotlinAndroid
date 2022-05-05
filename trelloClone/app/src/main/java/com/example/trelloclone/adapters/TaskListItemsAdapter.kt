@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.core.view.setMargins
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trelloclone.R
 import com.example.trelloclone.activities.TaskListActivity
@@ -87,6 +87,32 @@ open class TaskListItemsAdapter(private val context: Context, private var list: 
                     context.deleteTaskList(position)
                 }
             }
+
+            holder.itemView.tv_add_card.setOnClickListener {
+                holder.itemView.tv_add_card.visibility = View.GONE
+                holder.itemView.cv_add_card.visibility = View.VISIBLE
+            }
+
+            holder.itemView.ib_close_card_name.setOnClickListener {
+                holder.itemView.tv_add_card.visibility = View.VISIBLE
+                holder.itemView.cv_add_card.visibility = View.GONE
+            }
+
+            holder.itemView.ib_done_card_name.setOnClickListener {
+                val cardName = holder.itemView.et_card_name.text.toString()
+
+                if (cardName.isNotEmpty()) {
+                    if (context is TaskListActivity) {
+                        context.addCardToTaskList(position, cardName)
+                    }
+                }
+            }
+
+            holder.itemView.rv_card_list.layoutManager = LinearLayoutManager(context)
+            holder.itemView.rv_card_list.setHasFixedSize(true)
+
+            val adapter = CardListItemsAdapter(context, model.cards)
+            holder.itemView.rv_card_list.adapter = adapter
         }
     }
 

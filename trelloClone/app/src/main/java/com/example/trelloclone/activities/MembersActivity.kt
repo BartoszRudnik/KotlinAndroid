@@ -2,12 +2,16 @@ package com.example.trelloclone.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.trelloclone.R
+import com.example.trelloclone.adapters.MemberListItemsAdapter
 import com.example.trelloclone.databinding.ActivityMembersBinding
+import com.example.trelloclone.firebase.FireStoreClass
 import com.example.trelloclone.models.Board
+import com.example.trelloclone.models.User
 import com.example.trelloclone.utils.Constants
 
-class MembersActivity : AppCompatActivity() {
+class MembersActivity : BaseActivity() {
     private var binding: ActivityMembersBinding? = null
     private lateinit var mBoardsDetails: Board
 
@@ -23,6 +27,9 @@ class MembersActivity : AppCompatActivity() {
         }
 
         setupActionBar()
+
+        showProgressDialog(resources.getString(R.string.please_wait))
+        FireStoreClass().getAssignedMemberListDetails(this, mBoardsDetails.assignedTo)
     }
 
     private fun setupActionBar() {
@@ -39,5 +46,16 @@ class MembersActivity : AppCompatActivity() {
         binding?.toolbarMembersActivity?.setNavigationOnClickListener {
             onBackPressed()
         }
+    }
+
+    fun setupListMembers(list: ArrayList<User>) {
+        hideProgressDialog()
+
+        binding?.rvMembersList?.layoutManager = LinearLayoutManager(this)
+        binding?.rvMembersList?.setHasFixedSize(true)
+
+        val adapter = MemberListItemsAdapter(this, list)
+
+        binding?.rvMembersList?.adapter = adapter
     }
 }

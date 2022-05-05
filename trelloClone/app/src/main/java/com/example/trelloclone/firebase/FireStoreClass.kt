@@ -28,6 +28,23 @@ class FireStoreClass {
             }
     }
 
+    fun getAssignedMemberListDetails(activity: MembersActivity, assignedTo: ArrayList<String>) {
+        mFirestore.collection(Constants.USERS).whereIn(Constants.ID, assignedTo).get()
+            .addOnSuccessListener { document ->
+                val usersList: ArrayList<User> = ArrayList()
+
+                for (i in document.documents) {
+                    val user = i.toObject(User::class.java)
+
+                    usersList.add(user!!)
+                }
+
+                activity.setupListMembers(usersList)
+            }.addOnFailureListener {
+                activity.hideProgressDialog()
+            }
+    }
+
     fun loadUserData(activity: Activity, readBoardsList: Boolean = false) {
         mFirestore.collection(Constants.USERS).document(getCurrentUserId())
             .get().addOnSuccessListener { document ->

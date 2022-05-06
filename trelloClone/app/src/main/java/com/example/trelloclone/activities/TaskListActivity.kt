@@ -1,5 +1,6 @@
 package com.example.trelloclone.activities
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -19,6 +20,11 @@ class TaskListActivity : BaseActivity() {
     private var binding: ActivityTaskListBinding? = null
 
     private lateinit var mBoardDetails: Board
+    private lateinit var mBoardDocumentId: String
+
+    companion object {
+        const val MEMBER_REQUEST_CODE: Int = 13
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,16 +33,23 @@ class TaskListActivity : BaseActivity() {
 
         setContentView(binding?.root)
 
-
-        var boardDocumentId = ""
-
         if (intent.hasExtra(Constants.DOCUMENT_ID)) {
-            boardDocumentId = intent.getStringExtra(Constants.DOCUMENT_ID)!!
+            mBoardDocumentId = intent.getStringExtra(Constants.DOCUMENT_ID)!!
         }
 
         showProgressDialog(resources.getString(R.string.please_wait))
 
-        FireStoreClass().getBoardDetails(this, boardDocumentId)
+        FireStoreClass().getBoardDetails(this, mBoardDocumentId)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK && requestCode == MEMBER_REQUEST_CODE) {
+            showProgressDialog(resources.getString(R.string.please_wait))
+
+            FireStoreClass().getBoardDetails(this, mBoardDocumentId)
+        }
     }
 
     fun boardDetails(board: Board) {
@@ -122,7 +135,9 @@ class TaskListActivity : BaseActivity() {
                 val intent = Intent(this, MembersActivity::class.java)
                 intent.putExtra(Constants.BOARD_DETAIL, mBoardDetails)
 
-                startActivity(intent)
+                startActivityForResult(intent, MEMBER_REQUEST_CODE)
+
+                return true
             }
         }
 

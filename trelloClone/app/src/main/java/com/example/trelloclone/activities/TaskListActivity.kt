@@ -42,6 +42,10 @@ class TaskListActivity : BaseActivity() {
         FireStoreClass().getBoardDetails(this, mBoardDocumentId)
     }
 
+    fun cardDetails(taskListPosition: Int, cardPosition: Int) {
+        startActivity(Intent(this, CardDetailsActivity::class.java))
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 

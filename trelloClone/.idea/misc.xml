@@ -7,6 +7,7 @@
         <entry key="app/src/main/res/drawable/shape_button_rounded.xml" value="0.171" />
         <entry key="app/src/main/res/drawable/shape_dialog_rounded.xml" value="0.1175" />
         <entry key="app/src/main/res/drawable/white_border_shape_button_rounded.xml" value="0.171" />
+        <entry key="app/src/main/res/layout/activity_card_details.xml" value="0.1721014492753623" />
         <entry key="app/src/main/res/layout/activity_create_board.xml" value="0.15070921985815602" />
         <entry key="app/src/main/res/layout/activity_intro.xml" value="0.32563405797101447" />
         <entry key="app/src/main/res/layout/activity_members.xml" value="0.1721014492753623" />

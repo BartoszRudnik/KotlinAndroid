@@ -20,6 +20,7 @@ object Constants {
     const val TASK_LIST: String = "taskList"
     const val BOARD_DETAIL: String = "board_detail"
     const val ID: String = "id"
+    const val EMAIL: String = "email"
 
     fun getFileExtension(uri: Uri?, activity: Activity): String? {
         return MimeTypeMap.getSingleton()

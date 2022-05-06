@@ -28,6 +28,34 @@ class FireStoreClass {
             }
     }
 
+    fun getMemberDetails(activity: MembersActivity, email: String) {
+        mFirestore.collection(Constants.USERS).whereEqualTo(Constants.EMAIL, email).get()
+            .addOnSuccessListener { document ->
+                if (document.documents.size > 0) {
+                    val user = document.documents[0].toObject(User::class.java)
+
+                    activity.memberDetails(user!!)
+                } else {
+                    activity.hideProgressDialog()
+                    activity.showErrorSnackBar("No such member found")
+                }
+            }.addOnFailureListener {
+                activity.hideProgressDialog()
+            }
+    }
+
+    fun assignMemberToBoard(activity: MembersActivity, board: Board, user: User) {
+        val hashMap = HashMap<String, Any>()
+        hashMap[Constants.ASSIGNED_TO] = board.assignedTo
+
+        mFirestore.collection(Constants.BOARDS).document(board.documentId).update(hashMap)
+            .addOnSuccessListener {
+                activity.memberAssignSuccess(user)
+            }.addOnFailureListener {
+                activity.hideProgressDialog()
+            }
+    }
+
     fun getAssignedMemberListDetails(activity: MembersActivity, assignedTo: ArrayList<String>) {
         mFirestore.collection(Constants.USERS).whereIn(Constants.ID, assignedTo).get()
             .addOnSuccessListener { document ->

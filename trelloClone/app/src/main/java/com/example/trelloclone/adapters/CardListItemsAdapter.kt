@@ -1,13 +1,17 @@
 package com.example.trelloclone.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trelloclone.R
+import com.example.trelloclone.activities.TaskListActivity
 import com.example.trelloclone.models.Card
+import com.example.trelloclone.models.SelectedMembers
 import kotlinx.android.synthetic.main.item_card.view.*
 
 open class CardListItemsAdapter(
@@ -26,7 +30,7 @@ open class CardListItemsAdapter(
         )
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val model = list[position]
 
         if (holder is MyViewHolder) {
@@ -39,8 +43,54 @@ open class CardListItemsAdapter(
 
             holder.itemView.tv_card_name.text = model.name
 
-            holder.itemView.setOnClickListener {
+            if ((context as TaskListActivity).mAssignedMemberDetailList.size > 0) {
+                val selectedMembersList: ArrayList<SelectedMembers> = ArrayList()
 
+                for (i in context.mAssignedMemberDetailList.indices) {
+                    for (j in model.assignedTo) {
+                        if (context.mAssignedMemberDetailList[i].id == j) {
+                            selectedMembersList.add(
+                                SelectedMembers(
+                                    context.mAssignedMemberDetailList[i].id!!,
+                                    context.mAssignedMemberDetailList[i].image!!
+                                )
+                            )
+                        }
+                    }
+                }
+
+                if (selectedMembersList.size > 0) {
+                    if (selectedMembersList.size == 1 && selectedMembersList[0].id == model.createdBy) {
+                        holder.itemView.rv_card_selected_members_list.visibility = View.GONE
+                    } else {
+                        holder.itemView.rv_card_selected_members_list.visibility = View.VISIBLE
+
+                        holder.itemView.rv_card_selected_members_list.layoutManager =
+                            GridLayoutManager(context, 4)
+
+                        val adapter =
+                            CardMemberListItemsAdapter(context, selectedMembersList, false)
+
+                        holder.itemView.rv_card_selected_members_list.adapter = adapter
+
+                        adapter.setOnClickListener(object :
+                            CardMemberListItemsAdapter.OnClickListener {
+                            override fun onClick() {
+                                if (onClickListener != null) {
+                                    onClickListener!!.onClick(position)
+                                }
+                            }
+                        })
+                    }
+                } else {
+                    holder.itemView.rv_card_selected_members_list.visibility = View.GONE
+                }
+            }
+
+            holder.itemView.setOnClickListener {
+                if (onClickListener != null) {
+                    onClickListener!!.onClick(position)
+                }
             }
         }
     }

@@ -22,7 +22,7 @@ class TaskListActivity : BaseActivity() {
 
     private lateinit var mBoardDetails: Board
     private lateinit var mBoardDocumentId: String
-    private lateinit var mAssignedMemberDetailList: ArrayList<User>
+    lateinit var mAssignedMemberDetailList: ArrayList<User>
 
     companion object {
         const val MEMBER_REQUEST_CODE: Int = 13
@@ -74,18 +74,6 @@ class TaskListActivity : BaseActivity() {
         setupActionBar(board.name)
 
         mBoardDetails = board
-
-        val addTaskList = Task(resources.getString(R.string.add_list))
-        board.taskList.add(addTaskList)
-
-        rv_task_list.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
-        rv_task_list.setHasFixedSize(true)
-
-        val adapter = TaskListItemsAdapter(this, board.taskList)
-
-        rv_task_list.adapter = adapter
 
         showProgressDialog(resources.getString(R.string.please_wait))
 
@@ -195,5 +183,17 @@ class TaskListActivity : BaseActivity() {
         mAssignedMemberDetailList = list
 
         hideProgressDialog()
+
+        val addTaskList = Task(resources.getString(R.string.add_list))
+        mBoardDetails.taskList.add(addTaskList)
+
+        rv_task_list.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
+        rv_task_list.setHasFixedSize(true)
+
+        val adapter = TaskListItemsAdapter(this, mBoardDetails.taskList)
+
+        rv_task_list.adapter = adapter
     }
 }

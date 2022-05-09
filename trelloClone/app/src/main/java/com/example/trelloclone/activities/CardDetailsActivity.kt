@@ -13,6 +13,7 @@ import com.example.trelloclone.firebase.FireStoreClass
 import com.example.trelloclone.models.Board
 import com.example.trelloclone.models.Card
 import com.example.trelloclone.models.Task
+import com.example.trelloclone.models.User
 import com.example.trelloclone.utils.Constants
 
 class CardDetailsActivity : BaseActivity() {
@@ -22,6 +23,8 @@ class CardDetailsActivity : BaseActivity() {
     private var mTaskListPosition: Int = -1
     private var mCardPosition: Int = -1
     private var mSelectedColor: String = ""
+
+    private lateinit var mMembersDetails: ArrayList<User>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +39,12 @@ class CardDetailsActivity : BaseActivity() {
         binding?.etNameCardDetails?.setText(mBoard.taskList[mTaskListPosition].cards[mCardPosition].name)
         binding?.etNameCardDetails?.setSelection(binding?.etNameCardDetails?.text.toString().length)
 
+        mSelectedColor = mBoard.taskList[mTaskListPosition].cards[mCardPosition].labelColor
+
+        if (mSelectedColor.isNotEmpty()) {
+            setColor()
+        }
+
         binding?.btnUpdateCardDetails?.setOnClickListener {
             if (binding?.etNameCardDetails?.text.toString().isNotEmpty()) {
                 updateCardDetails()
@@ -45,6 +54,8 @@ class CardDetailsActivity : BaseActivity() {
         binding?.tvSelectLabelColor?.setOnClickListener {
             colorListDialog()
         }
+
+
     }
 
     private fun getIntentData() {
@@ -56,6 +67,9 @@ class CardDetailsActivity : BaseActivity() {
         }
         if (intent.hasExtra(Constants.TASK_LIST_ITEM_POSITION)) {
             mTaskListPosition = intent.getIntExtra(Constants.TASK_LIST_ITEM_POSITION, -1)
+        }
+        if (intent.hasExtra(Constants.BOARD_MEMBERS_LIST)) {
+            mMembersDetails = intent.getParcelableArrayListExtra(Constants.BOARD_MEMBERS_LIST)!!
         }
     }
 
@@ -134,7 +148,7 @@ class CardDetailsActivity : BaseActivity() {
         val colorList: ArrayList<String> = colorsList()
 
         val listDialog = object : LabelColorListDialog(
-            this, colorList, resources.getString(R.string.str_select_label_color)
+            this, colorList, resources.getString(R.string.str_select_label_color), mSelectedColor
         ) {
             override fun onItemSelected(color: String) {
                 setColor()

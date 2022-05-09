@@ -3,6 +3,7 @@ package com.example.trelloclone.firebase
 import android.app.Activity
 import com.example.trelloclone.activities.*
 import com.example.trelloclone.models.Board
+import com.example.trelloclone.models.Task
 import com.example.trelloclone.models.User
 import com.example.trelloclone.utils.Constants
 import com.google.firebase.auth.FirebaseAuth
@@ -56,7 +57,7 @@ class FireStoreClass {
             }
     }
 
-    fun getAssignedMemberListDetails(activity: MembersActivity, assignedTo: ArrayList<String>) {
+    fun getAssignedMemberListDetails(activity: Activity, assignedTo: ArrayList<String>) {
         mFirestore.collection(Constants.USERS).whereIn(Constants.ID, assignedTo).get()
             .addOnSuccessListener { document ->
                 val usersList: ArrayList<User> = ArrayList()
@@ -67,9 +68,17 @@ class FireStoreClass {
                     usersList.add(user!!)
                 }
 
-                activity.setupListMembers(usersList)
+                if (activity is MembersActivity) {
+                    activity.setupListMembers(usersList)
+                } else if (activity is TaskListActivity) {
+                    activity.boardMembersDetailsList(usersList)
+                }
             }.addOnFailureListener {
-                activity.hideProgressDialog()
+                if (activity is MembersActivity) {
+                    activity.hideProgressDialog()
+                } else if (activity is TaskListActivity) {
+                    activity.hideProgressDialog()
+                }
             }
     }
 

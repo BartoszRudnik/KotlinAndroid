@@ -26,7 +26,18 @@ object Constants {
     const val BOARD_MEMBERS_LIST: String = "board_members_list"
     const val SELECT: String = "select"
     const val UN_SELECT: String = "UnSelect"
+    const val PROJEMANAG_PREFERENCES = "Projemanage_preferences"
+    const val FCM_TOKEN_UPDATED = "fcm_token_updated"
+    const val FCM_TOKEN = "fcm_token"
 
+    const val FCM_BASE_URL = "https://fcm.googleapis.com/fcm/send"
+    const val FCM_AUTHORIZATION: String = "authorization"
+    const val FCM_KEY: String = "key"
+    const val FCM_SERVER_KEY: String = ""
+    const val FCM_KEY_TITLE: String = "title"
+    const val FCM_KEY_MESSAGE: String = "message"
+    const val FCM_KEY_DATA: String = "data"
+    const val FCM_KEY_TO: String = "to"
 
     fun getFileExtension(uri: Uri?, activity: Activity): String? {
         return MimeTypeMap.getSingleton()
